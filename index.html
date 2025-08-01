@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mini accessories and fashions</title>
+  <style>
+    :root {
+      --primary-color: #232f3e;
+      --accent-color: #f08804;
+      --bg-color: #f3f3f3;
+      --card-bg: #ffffff;
+      --text-dark: #111;
+      --text-light: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-color);
+      margin: 0;
+      padding: 0;
+      color: var(--text-dark);
+    }
+
+    header {
+      background: var(--primary-color);
+      color: var(--text-light);
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 1px;
+    }
+
+    button {
+      padding: 10px 16px;
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #d97706;
+    }
+
+    .login-page, .cart-page, .checkout-page {
+      max-width: 450px;
+      margin: 60px auto;
+      background: var(--card-bg);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: var(--primary-color);
+      text-align: center;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin: 12px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .category-section {
+      padding: 30px;
+    }
+
+    .category-section h3 {
+      margin-bottom: 16px;
+      color: var(--primary-color);
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .product {
+      background: var(--card-bg);
+      padding: 16px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease;
+    }
+
+    .product:hover {
+      transform: translateY(-5px);
+    }
+
+    .product img {
+  width: 350px;
+  height: 270px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin: 0 auto;
+}
+
+    
+
+    .product h3 {
+      margin: 10px 0 6px;
+      font-size: 18px;
+      color: var(--primary-color);
+    }
+
+    .product p {
+      color: #333;
+      margin: 0 0 10px;
+      font-weight: bold;
+    }
+
+    #cart-items li {
+      padding: 8px 0;
+      border-bottom: 1px solid #ccc;
+    }
+
+    #cart-total {
+      font-weight: bold;
+      margin-top: 12px;
+      color: var(--accent-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="login-page" id="login-page">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="handleLogin()">Login</button>
+  </div>
+
+  <div id="main-content" style="display:none;">
+    <header>
+      <h1>Mini accessories and fashions</h1>
+      <button onclick="viewCart()">View Cart 🛒</button>
+    </header>
+
+    <div class="category-section" id="categories"></div>
+  </div>
+
+  <div class="cart-page" id="cart-page" style="display:none;">
+    <h2>Your Cart</h2>
+    <ul id="cart-items"></ul>
+    <p id="cart-total"></p>
+    <button onclick="goBack()">Continue Shopping</button>
+  </div>
+
+  <script>
+    const products = [
+      { name: "Wireless Headphones", price: 1499, img: "image/wirelessheadphone.jpg", category: "Electronics" },
+      { name: "Smart Watch", price: 2599, img: "image/smart_watch.webp", category: "Electronics" },
+      { name: "Bluetooth Speaker", price: 1299, img: "image/bluetoothspeaker.jpg", category: "Electronics" },
+      { name: "Sneakers", price: 2299, img: "image/sneakers.jpg", category: "Fashion" },
+      { name: "Sunglasses", price: 899, img: "image/sunglasses.jpg", category: "Fashion" },
+      { name: "Laptop Backpack", price: 999, img: "image/laptopbag.jpg", category: "Fashion" },
+      { name: "Gaming Mouse", price: 649, img: "image/gaming mouse.webp", category: "Accessories" },
+      { name: "Wireless Keyboard", price: 999, img: "image/wirelesskeyboard.webp", category: "Accessories" },
+      { name: "Power Bank", price: 1399, img: "image/powerbank.jpg", category: "Accessories" },
+      { name: "Fitness Tracker", price: 1799, img: "image/fitnesstracker.jpg", category: "Electronics" }
+    ];
+
+    const cart = [];
+
+    function handleLogin() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      if (username && password) {
+        document.getElementById("login-page").style.display = "none";
+        document.getElementById("main-content").style.display = "block";
+        displayProductsByCategory();
+      } else {
+        alert("Please enter valid credentials.");
+      }
+    }
+
+    function displayProductsByCategory() {
+      const categoryContainer = document.getElementById("categories");
+      categoryContainer.innerHTML = "";
+      const categories = [...new Set(products.map(p => p.category))];
+
+      categories.forEach(cat => {
+        const section = document.createElement("section");
+        const title = document.createElement("h3");
+        title.textContent = cat;
+        section.appendChild(title);
+
+        const grid = document.createElement("div");
+        grid.className = "product-grid";
+
+        products.filter(p => p.category === cat).forEach((product, index) => {
+          const div = document.createElement("div");
+          div.className = "product";
+          div.innerHTML = `
+            <img src="${product.img}" alt="${product.name}">
+            <h3>${product.name}</h3>
+            <p>₹${product.price}</p>
+            <button onclick="addToCart(${index})">Buy Now</button>
+          `;
+          grid.appendChild(div);
+        });
+
+        section.appendChild(grid);
+        categoryContainer.appendChild(section);
+      });
+    }
+
+    function addToCart(index) {
+      cart.push(products[index]);
+      alert(products[index].name + " added to cart.");
+    }
+
+    function viewCart() {
+      document.getElementById("main-content").style.display = "none";
+      document.getElementById("cart-page").style.display = "block";
+      const cartItems = document.getElementById("cart-items");
+      const cartTotal = document.getElementById("cart-total");
+      cartItems.innerHTML = "";
+      let total = 0;
+      cart.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.name} - ₹${item.price}`;
+        cartItems.appendChild(li);
+        total += item.price;
+      });
+      cartTotal.textContent = `Total: ₹${total}`;
+    }
+
+    function goBack() {
+      document.getElementById("cart-page").style.display = "none";
+      document.getElementById("main-content").style.display = "block";
+    }
+  </script>
+</body>
+</html>
